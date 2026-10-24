@@ -9,7 +9,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('PyTest DQ Framework') {
-                    sh 'pip install --no-cache-dir --break-system-packages -r requirements.txt'                }
+                    sh 'pip install --no-cache-dir --break-system-packages -r requirements.txt'
+                }
             }
         }
 
@@ -36,14 +37,6 @@ pipeline {
         stage('Archive Test Report') {
             steps {
                 archiveArtifacts artifacts: 'PyTest DQ Framework/html_report/**', allowEmptyArchive: true
-
-                publishHTML(target: [
-                    allowMissing: false,
-                    keepAll: true,
-                    reportDir: 'PyTest DQ Framework/html_report',
-                    reportFiles: 'report.html',
-                    reportName: 'HTML Test Report'
-                ])
             }
         }
     }
