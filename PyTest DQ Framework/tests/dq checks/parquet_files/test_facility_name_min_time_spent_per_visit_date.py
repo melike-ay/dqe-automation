@@ -13,7 +13,7 @@ def source_data(db_connection):
         DATE(v.visit_timestamp) AS visit_date,
         MIN(v.duration_minutes) AS min_time_spent
     FROM facilities f
-    JOIN visits v ON f.facility_id = v.facility_id
+    JOIN visits v ON f.id = v.facility_id
     GROUP BY f.facility_name, DATE(v.visit_timestamp)
     """
     return db_connection.get_data_sql(source_query)

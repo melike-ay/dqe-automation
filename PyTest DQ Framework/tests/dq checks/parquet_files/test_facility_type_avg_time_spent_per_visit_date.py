@@ -15,7 +15,7 @@ def source_data(db_connection):
         DATE(v.visit_timestamp) AS visit_date,
         ROUND(AVG(v.duration_minutes)::numeric, 2) AS avg_time_spent
     FROM facilities f
-    JOIN visits v ON f.facility_id = v.facility_id
+    JOIN visits v ON f.id = v.facility_id
     GROUP BY f.facility_type, DATE(v.visit_timestamp)
     """
     return db_connection.get_data_sql(source_query)

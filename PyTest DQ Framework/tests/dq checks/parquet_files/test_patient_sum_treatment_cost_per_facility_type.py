@@ -15,8 +15,8 @@ def source_data(db_connection):
         CONCAT(p.first_name, ' ', p.last_name) AS full_name,
         SUM(v.treatment_cost) AS sum_treatment_cost
     FROM facilities f
-    JOIN visits v ON f.facility_id = v.facility_id
-    JOIN patients p ON v.patient_id = p.patient_id
+    JOIN visits v ON f.id = v.facility_id
+    JOIN patients p ON v.patient_id = p.id
     GROUP BY f.facility_type, p.first_name, p.last_name
     """
     return db_connection.get_data_sql(source_query)
