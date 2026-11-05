@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5.1 (Python 3.13.10 on darwin)" generated="2026-11-05T16:25:25.104041" rpa="false" schemaversion="5">
+<suite id="s1" name="Test" source="/Users/melike_ay/dqe-automation/Robot Framework/test.robot">
+<test id="s1-t1" name="HTML Report Should Match Parquet Dataset" line="13">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-11-05T16:25:25.725934" level="INFO">${report_url} = file:///Users/melike_ay/dqe-automation/Robot%20Framework/report.html</msg>
+<var>${report_url}</var>
+<arg>pathlib.Path(r"${REPORT_FILE}").resolve().as_uri()</arg>
+<arg>modules=pathlib</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-11-05T16:25:25.725557" elapsed="0.000399"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-11-05T16:25:25.726303" level="INFO">Opening browser 'chrome' to base url 'file:///Users/melike_ay/dqe-automation/Robot%20Framework/report.html'.</msg>
+<arg>${report_url}</arg>
+<arg>chrome</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2026-11-05T16:25:25.726185" elapsed="3.142883"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css:.plotly-graph-div svg.main-svg</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2026-11-05T16:25:28.869611" elapsed="0.028879"/>
+</kw>
+<kw name="Get WebElement" owner="SeleniumLibrary">
+<msg time="2026-11-05T16:25:28.902530" level="INFO">${table} = &lt;selenium.webdriver.remote.webelement.WebElement (session="d8b113cd01635078a07fbbf62f13e22b", element="f.042C287FDE5E749F79558933DB124374.d.7859A9D20440610010026A6573312211.e.5")&gt;</msg>
+<var>${table}</var>
+<arg>css:.plotly-graph-div</arg>
+<doc>Returns the first WebElement matching the given ``locator``.</doc>
+<status status="PASS" start="2026-11-05T16:25:28.898679" elapsed="0.003890"/>
+</kw>
+<kw name="Read Html Table" owner="helper">
+<msg time="2026-11-05T16:25:28.917684" level="INFO">${html_df} =        facility_type  visit_date  avg_time_spent
+0   Specialty Center  2026-10-02           51.00
+1           Hospital  2026-10-02           50.00
+2             Clinic  2026-10-02           21.33
+3   ...</msg>
+<var>${html_df}</var>
+<arg>${table}</arg>
+<doc>Read a native HTML table or Plotly table trace into a DataFrame.</doc>
+<status status="PASS" start="2026-11-05T16:25:28.902719" elapsed="0.015006"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-11-05T16:25:28.918222" level="INFO">${expected_columns} = ['facility_type', 'visit_date', 'avg_time_spent']</msg>
+<var>${expected_columns}</var>
+<arg>list($html_df.columns)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-11-05T16:25:28.917892" elapsed="0.000344"/>
+</kw>
+<kw name="Read Parquet Dataset" owner="helper">
+<msg time="2026-11-05T16:25:29.091304" level="INFO">${parquet_df} =        facility_type visit_date  avg_time_spent
+0           Hospital 2026-09-29           47.75
+1             Clinic 2026-09-28           35.80
+2             Clinic 2026-09-30           38.00
+3       ...</msg>
+<var>${parquet_df}</var>
+<arg>${PARQUET_FOLDER}</arg>
+<arg>${FILTER_DATE}</arg>
+<arg>${DATE_COLUMN}</arg>
+<arg>False</arg>
+<arg>${expected_columns}</arg>
+<doc>Read a (partitioned) Parquet dataset into a DataFrame.
+If filter_date (YYYY-MM-DD) is given, keep the seven-day window ending
+on that date, matching the report's rolling-week table.</doc>
+<status status="PASS" start="2026-11-05T16:25:28.918320" elapsed="0.173027"/>
+</kw>
+<kw name="Compare Dataframes" owner="helper">
+<msg time="2026-11-05T16:25:29.099628" level="FAIL">DataFrames do not match! HTML rows: 19, Parquet rows: 19, differences: 38
+
+   facility_type          visit_date avg_time_spent          source
+          Clinic          2026-09-26          28.33    ONLY IN HTML
+          Clinic 2026-09-26 00:00:00          28.33 ONLY IN PARQUET
+          Clinic          2026-09-27           30.5    ONLY IN HTML
+          Clinic 2026-09-27 00:00:00           30.5 ONLY IN PARQUET
+          Clinic          2026-09-28           35.8    ONLY IN HTML
+          Clinic 2026-09-28 00:00:00           35.8 ONLY IN PARQUET
+          Clinic          2026-09-30             38    ONLY IN HTML
+          Clinic 2026-09-30 00:00:00             38 ONLY IN PARQUET
+          Clinic          2026-10-02          21.33    ONLY IN HTML
+          Clinic 2026-10-02 00:00:00          21.33 ONLY IN PARQUET
+        Hospital          2026-09-26             52    ONLY IN HTML
+        Hospital 2026-09-26 00:00:00             52 ONLY IN PARQUET
+        Hospital          2026-09-27             25    ONLY IN HTML
+        Hospital 2026-09-27 00:00:00             25 ONLY IN PARQUET
+        Hospital          2026-09-28             31    ONLY IN HTML
+        Hospital 2026-09-28 00:00:00             31 ONLY IN PARQUET
+        Hospital          2026-09-29          47.75    ONLY IN HTML
+        Hospital 2026-09-29 00:00:00          47.75 ONLY IN PARQUET
+        Hospital          2026-09-30             45    ONLY IN HTML
+        Hospital 2026-09-30 00:00:00             45 ONLY IN PARQUET
+        Hospital          2026-10-01             22    ONLY IN HTML
+        Hospital 2026-10-01 00:00:00             22 ONLY IN PARQUET
+        Hospital          2026-10-02             50    ONLY IN HTML
+        Hospital 2026-10-02 00:00:00             50 ONLY IN PARQUET
+Specialty Center          2026-09-26             57    ONLY IN HTML
+Specialty Center 2026-09-26 00:00:00             57 ONLY IN PARQUET
+Specialty Center          2026-09-27           30.5    ONLY IN HTML
+Specialty Center 2026-09-27 00:00:00           30.5 ONLY IN PARQUET
+Specialty Center          2026-09-28             57    ONLY IN HTML
+Specialty Center 2026-09-28 00:00:00             57 ONLY IN PARQUET
+Specialty Center          2026-09-29           48.5    ONLY IN HTML
+Specialty Center 2026-09-29 00:00:00           48.5 ONLY IN PARQUET
+Specialty Center          2026-09-30             45    ONLY IN HTML
+Specialty Center 2026-09-30 00:00:00             45 ONLY IN PARQUET
+Specialty Center          2026-10-01             35    ONLY IN HTML
+Specialty Center 2026-10-01 00:00:00             35 ONLY IN PARQUET
+Specialty Center          2026-10-02             51    ONLY IN HTML
+Specialty Center 2026-10-02 00:00:00             51 ONLY IN PARQUET</msg>
+<arg>${html_df}</arg>
+<arg>${parquet_df}</arg>
+<doc>Compare two DataFrames for an exact match (row order is ignored).
+Raises AssertionError with a list of differences if they don't match.</doc>
+<status status="FAIL" start="2026-11-05T16:25:29.091518" elapsed="0.008600">DataFrames do not match! HTML rows: 19, Parquet rows: 19, differences: 38
+
+   facility_type          visit_date avg_time_spent          source
+          Clinic          2026-09-26          28.33    ONLY IN HTML
+          Clinic 2026-09-26 00:00:00          28.33 ONLY IN PARQUET
+          Clinic          2026-09-27           30.5    ONLY IN HTML
+          Clinic 2026-09-27 00:00:00           30.5 ONLY IN PARQUET
+          Clinic          2026-09-28           35.8    ONLY IN HTML
+          Clinic 2026-09-28 00:00:00           35.8 ONLY IN PARQUET
+          Clinic          2026-09-30             38    ONLY IN HTML
+          Clinic 2026-09-30 00:00:00             38 ONLY IN PARQUET
+          Clinic          2026-10-02          21.33    ONLY IN HTML
+          Clinic 2026-10-02 00:00:00          21.33 ONLY IN PARQUET
+        Hospital          2026-09-26             52    ONLY IN HTML
+        Hospital 2026-09-26 00:00:00             52 ONLY IN PARQUET
+        Hospital          2026-09-27             25    ONLY IN HTML
+        Hospital 2026-09-27 00:00:00             25 ONLY IN PARQUET
+        Hospital          2026-09-28             31    ONLY IN HTML
+        Hospital 2026-09-28 00:00:00             31 ONLY IN PARQUET
+        Hospital          2026-09-29          47.75    ONLY IN HTML
+    [ Message content over the limit has been removed. ]
+        Hospital          2026-09-30             45    ONLY IN HTML
+        Hospital 2026-09-30 00:00:00             45 ONLY IN PARQUET
+        Hospital          2026-10-01             22    ONLY IN HTML
+        Hospital 2026-10-01 00:00:00             22 ONLY IN PARQUET
+        Hospital          2026-10-02             50    ONLY IN HTML
+        Hospital 2026-10-02 00:00:00             50 ONLY IN PARQUET
+Specialty Center          2026-09-26             57    ONLY IN HTML
+Specialty Center 2026-09-26 00:00:00             57 ONLY IN PARQUET
+Specialty Center          2026-09-27           30.5    ONLY IN HTML
+Specialty Center 2026-09-27 00:00:00           30.5 ONLY IN PARQUET
+Specialty Center          2026-09-28             57    ONLY IN HTML
+Specialty Center 2026-09-28 00:00:00             57 ONLY IN PARQUET
+Specialty Center          2026-09-29           48.5    ONLY IN HTML
+Specialty Center 2026-09-29 00:00:00           48.5 ONLY IN PARQUET
+Specialty Center          2026-09-30             45    ONLY IN HTML
+Specialty Center 2026-09-30 00:00:00             45 ONLY IN PARQUET
+Specialty Center          2026-10-01             35    ONLY IN HTML
+Specialty Center 2026-10-01 00:00:00             35 ONLY IN PARQUET
+Specialty Center          2026-10-02             51    ONLY IN HTML
+Specialty Center 2026-10-02 00:00:00             51 ONLY IN PARQUET</status>
+</kw>
+<kw name="Close All Browsers" owner="SeleniumLibrary" type="TEARDOWN">
+<doc>Closes all open browsers and resets the browser cache.</doc>
+<status status="PASS" start="2026-11-05T16:25:29.100445" elapsed="0.103085"/>
+</kw>
+<doc>Compares the table in report.html with the Parquet data.</doc>
+<status status="FAIL" start="2026-11-05T16:25:25.724947" elapsed="3.478699">DataFrames do not match! HTML rows: 19, Parquet rows: 19, differences: 38
+
+   facility_type          visit_date avg_time_spent          source
+          Clinic          2026-09-26          28.33    ONLY IN HTML
+          Clinic 2026-09-26 00:00:00          28.33 ONLY IN PARQUET
+          Clinic          2026-09-27           30.5    ONLY IN HTML
+          Clinic 2026-09-27 00:00:00           30.5 ONLY IN PARQUET
+          Clinic          2026-09-28           35.8    ONLY IN HTML
+          Clinic 2026-09-28 00:00:00           35.8 ONLY IN PARQUET
+          Clinic          2026-09-30             38    ONLY IN HTML
+          Clinic 2026-09-30 00:00:00             38 ONLY IN PARQUET
+          Clinic          2026-10-02          21.33    ONLY IN HTML
+          Clinic 2026-10-02 00:00:00          21.33 ONLY IN PARQUET
+        Hospital          2026-09-26             52    ONLY IN HTML
+        Hospital 2026-09-26 00:00:00             52 ONLY IN PARQUET
+        Hospital          2026-09-27             25    ONLY IN HTML
+        Hospital 2026-09-27 00:00:00             25 ONLY IN PARQUET
+        Hospital          2026-09-28             31    ONLY IN HTML
+        Hospital 2026-09-28 00:00:00             31 ONLY IN PARQUET
+        Hospital          2026-09-29          47.75    ONLY IN HTML
+    [ Message content over the limit has been removed. ]
+        Hospital          2026-09-30             45    ONLY IN HTML
+        Hospital 2026-09-30 00:00:00             45 ONLY IN PARQUET
+        Hospital          2026-10-01             22    ONLY IN HTML
+        Hospital 2026-10-01 00:00:00             22 ONLY IN PARQUET
+        Hospital          2026-10-02             50    ONLY IN HTML
+        Hospital 2026-10-02 00:00:00             50 ONLY IN PARQUET
+Specialty Center          2026-09-26             57    ONLY IN HTML
+Specialty Center 2026-09-26 00:00:00             57 ONLY IN PARQUET
+Specialty Center          2026-09-27           30.5    ONLY IN HTML
+Specialty Center 2026-09-27 00:00:00           30.5 ONLY IN PARQUET
+Specialty Center          2026-09-28             57    ONLY IN HTML
+Specialty Center 2026-09-28 00:00:00             57 ONLY IN PARQUET
+Specialty Center          2026-09-29           48.5    ONLY IN HTML
+Specialty Center 2026-09-29 00:00:00           48.5 ONLY IN PARQUET
+Specialty Center          2026-09-30             45    ONLY IN HTML
+Specialty Center 2026-09-30 00:00:00             45 ONLY IN PARQUET
+Specialty Center          2026-10-01             35    ONLY IN HTML
+Specialty Center 2026-10-01 00:00:00             35 ONLY IN PARQUET
+Specialty Center          2026-10-02             51    ONLY IN HTML
+Specialty Center 2026-10-02 00:00:00             51 ONLY IN PARQUET</status>
+</test>
+<status status="FAIL" start="2026-11-05T16:25:25.104801" elapsed="4.099240"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Test" id="s1" pass="0" fail="1" skip="0">Test</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
